@@ -1,19 +1,28 @@
 package main
 
 import (
-	"company-profile-api/database/migration"
+	"company-profile-api/database/connection_db"
+	"company-profile-api/handler"
+	"company-profile-api/src/user/account"
 	"log"
 
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	dsn := "root:@tcp(127.0.0.1:3306)/companyProfileDB?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	connectionDB, err := connection_db.ConnectionDB()
 	if err != nil {
 		log.Fatal("failed connection to database ", err.Error())
 	} else {
-		migration.MigrationAll(db)
+		// migration.MigrationAll(connectionDB)
+		// connectionDB.Migrator().DropTable(&account.Account{})
+		// connectionDB.Migrator().DropTable(&profile.Profile{})
+		newRepository := account.NewRepository(connectionDB)
+		newService := account.NewService(newRepository)
+		newAccountHandler := handler.NewAccountHandler(newService)
+		router := gin.Default()
+		api := router.Group("api")
+		api.POST("account", newAccountHandler.CreateAccountHandler)
+		router.Run()
 	}
 }

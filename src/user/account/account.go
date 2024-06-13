@@ -6,6 +6,6 @@ type Account struct {
 	ID        int
 	Email     string
 	Password  string
-	CreatedAT time.Time
+	CreatedAt time.Time
 	UpdatedAt time.Time
 }

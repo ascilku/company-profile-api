@@ -10,6 +10,6 @@ type Profile struct {
 	AccountID int
 	Name      string
 	Account   account.Account
-	CreatedAT time.Time
+	CreatedAt time.Time
 	UpdatedAt time.Time
 }
