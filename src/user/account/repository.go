@@ -30,5 +30,4 @@ func (r *repository) FindByEmailRepository(email string) (Account, error) {
 		return keyAccount, err
 	}
 	return keyAccount, nil
-
 }

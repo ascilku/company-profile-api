@@ -8,6 +8,7 @@ import (
 
 type Service interface {
 	CreateAccountService(createAccount CreateAccountRequest) (Account, error)
+	LoginAccountService(loginAccount CreateAccountRequest) (Account, error)
 }
 
 type service struct {
@@ -42,7 +43,22 @@ func (s *service) CreateAccountService(createAccount CreateAccountRequest) (Acco
 				return createAccount, nil
 			}
 		}
+	}
+}
 
+func (s *service) LoginAccountService(loginAccount CreateAccountRequest) (Account, error) {
+	findByEmail, err := s.repository.FindByEmailRepository(loginAccount.Email)
+	if err != nil {
+		return findByEmail, err
+	} else {
+		if findByEmail.ID == 0 {
+			return findByEmail, errors.New("no acces account")
+		}
+		err := bcrypt.CompareHashAndPassword([]byte(findByEmail.Password), []byte(loginAccount.Password))
+		if err != nil {
+			return findByEmail, err
+		}
+		return findByEmail, nil
 	}
 
 }

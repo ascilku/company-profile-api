@@ -33,9 +33,31 @@ func (s *acountHandler) CreateAccountHandler(g *gin.Context) {
 			g.JSON(http.StatusBadRequest, responJson)
 			return
 		}
-		formatter := account.Formatter(createAccount)
+		formatter := account.Formatter(createAccount, "token token")
 		responJson := respon.ResponJson("succes create data account", http.StatusOK, []interface{}{}, formatter)
 		g.JSON(http.StatusOK, responJson)
 	}
+}
 
+func (s *acountHandler) LoginAccountHandler(g *gin.Context) {
+	var createAccountRequest account.CreateAccountRequest
+	err := g.ShouldBindJSON(&createAccountRequest)
+	if err != nil {
+		errorMessage := gin.H{"errors": error_validation.ErrorValidation(err)}
+		responJson := respon.ResponJson("failed login access user account", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
+		g.JSON(http.StatusUnprocessableEntity, responJson)
+		return
+	} else {
+
+		loginAccountService, err := s.service.LoginAccountService(createAccountRequest)
+		if err != nil {
+			errorMessage := gin.H{"errors": err.Error()}
+			responJson := respon.ResponJson("failed login access user account", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
+			g.JSON(http.StatusUnprocessableEntity, responJson)
+			return
+		}
+		formatter := account.Formatter(loginAccountService, "token token")
+		responJson := respon.ResponJson("succes login access user account", http.StatusOK, []interface{}{}, formatter)
+		g.JSON(http.StatusOK, responJson)
+	}
 }

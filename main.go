@@ -15,6 +15,7 @@ func main() {
 		log.Fatal("failed connection to database ", err.Error())
 	} else {
 		// migration.MigrationAll(connectionDB)
+		// connectionDB.AutoMigrate(&profile.ProfileImage{})
 		// connectionDB.Migrator().DropTable(&account.Account{})
 		// connectionDB.Migrator().DropTable(&profile.Profile{})
 		newRepository := account.NewRepository(connectionDB)
@@ -23,6 +24,7 @@ func main() {
 		router := gin.Default()
 		api := router.Group("api")
 		api.POST("account", newAccountHandler.CreateAccountHandler)
+		api.POST("auth", newAccountHandler.LoginAccountHandler)
 		router.Run()
 	}
 }

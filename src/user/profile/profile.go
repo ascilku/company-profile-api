@@ -1,15 +1,22 @@
 package profile
 
 import (
-	"company-profile-api/src/user/account"
 	"time"
 )
 
 type Profile struct {
+	ID            int
+	AccountID     int
+	Name          string
+	ProfileImages []ProfileImage
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}
+
+type ProfileImage struct {
 	ID        int
-	AccountID int
-	Name      string
-	Account   account.Account
+	ProfileID int
+	ImgUrl    string
 	CreatedAt time.Time
-	UpdatedAt time.Time
+	Updated   time.Time
 }
