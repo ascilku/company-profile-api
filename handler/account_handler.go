@@ -2,6 +2,7 @@ package handler
 
 import (
 	"company-profile-api/config/error_validation"
+	"company-profile-api/config/middleware"
 	"company-profile-api/config/respon"
 	"company-profile-api/src/user/account"
 	"net/http"
@@ -11,13 +12,14 @@ import (
 
 type acountHandler struct {
 	service account.Service
+	auth    middleware.AuthMiddleware
 }
 
-func NewAccountHandler(service account.Service) *acountHandler {
-	return &acountHandler{service}
+func NewAccountHandler(service account.Service, auth middleware.AuthMiddleware) *acountHandler {
+	return &acountHandler{service, auth}
 }
 
-func (s *acountHandler) CreateAccountHandler(g *gin.Context) {
+func (h *acountHandler) CreateAccountHandler(g *gin.Context) {
 	var createAccountRequest account.CreateAccountRequest
 	err := g.ShouldBindJSON(&createAccountRequest)
 	if err != nil {
@@ -26,20 +28,19 @@ func (s *acountHandler) CreateAccountHandler(g *gin.Context) {
 		g.JSON(http.StatusUnprocessableEntity, responJson)
 		return
 	} else {
-		createAccount, err := s.service.CreateAccountService(createAccountRequest)
+		_, err := h.service.CreateAccountService(createAccountRequest)
 		if err != nil {
 			errorMessage := gin.H{"errors": err.Error()}
 			responJson := respon.ResponJson("failed create data account", http.StatusBadRequest, errorMessage, []interface{}{})
 			g.JSON(http.StatusBadRequest, responJson)
 			return
 		}
-		formatter := account.Formatter(createAccount, "token token")
-		responJson := respon.ResponJson("succes create data account", http.StatusOK, []interface{}{}, formatter)
+		responJson := respon.ResponJson("succes create data account", http.StatusOK, []interface{}{}, []interface{}{})
 		g.JSON(http.StatusOK, responJson)
 	}
 }
 
-func (s *acountHandler) LoginAccountHandler(g *gin.Context) {
+func (h *acountHandler) LoginAccountHandler(g *gin.Context) {
 	var createAccountRequest account.CreateAccountRequest
 	err := g.ShouldBindJSON(&createAccountRequest)
 	if err != nil {
@@ -48,16 +49,23 @@ func (s *acountHandler) LoginAccountHandler(g *gin.Context) {
 		g.JSON(http.StatusUnprocessableEntity, responJson)
 		return
 	} else {
-
-		loginAccountService, err := s.service.LoginAccountService(createAccountRequest)
+		loginAccountService, err := h.service.LoginAccountService(createAccountRequest)
 		if err != nil {
 			errorMessage := gin.H{"errors": err.Error()}
 			responJson := respon.ResponJson("failed login access user account", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
 			g.JSON(http.StatusUnprocessableEntity, responJson)
 			return
+		} else {
+			generateToken, err := h.auth.GenerateToken(loginAccountService.ID)
+			if err != nil {
+				errorMessage := gin.H{"errors": err.Error()}
+				responJson := respon.ResponJson("failed login access user account", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
+				g.JSON(http.StatusUnprocessableEntity, responJson)
+				return
+			}
+			formatter := account.Formatter(loginAccountService, generateToken)
+			responJson := respon.ResponJson("succes login access user account", http.StatusOK, []interface{}{}, formatter)
+			g.JSON(http.StatusOK, responJson)
 		}
-		formatter := account.Formatter(loginAccountService, "token token")
-		responJson := respon.ResponJson("succes login access user account", http.StatusOK, []interface{}{}, formatter)
-		g.JSON(http.StatusOK, responJson)
 	}
 }

@@ -9,6 +9,7 @@ import (
 type Service interface {
 	CreateAccountService(createAccount CreateAccountRequest) (Account, error)
 	LoginAccountService(loginAccount CreateAccountRequest) (Account, error)
+	FindByIDAccountService(userID int) (Account, error)
 }
 
 type service struct {
@@ -60,5 +61,17 @@ func (s *service) LoginAccountService(loginAccount CreateAccountRequest) (Accoun
 		}
 		return findByEmail, nil
 	}
+}
 
+func (s *service) FindByIDAccountService(userID int) (Account, error) {
+	findByIDAccount, err := s.repository.FindByIDAccountRepository(userID)
+	if err != nil {
+		return findByIDAccount, err
+	}
+
+	if findByIDAccount.ID == 0 {
+		return findByIDAccount, errors.New("not data id user")
+	}
+
+	return findByIDAccount, nil
 }
