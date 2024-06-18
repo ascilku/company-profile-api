@@ -1,6 +1,7 @@
 package profile
 
 type CreateProfileReq struct {
-	AccountID int
-	Name      string `binding:"required"`
+	AccountID     int
+	Name          string `form:"name" binding:"required"`
+	ProfileImages string
 }

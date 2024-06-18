@@ -14,7 +14,8 @@ func NewService(repository Repository) *service {
 
 func (s *service) CreateOrUpdateProfileServ(createProfile CreateProfileReq) (Profile, string, error) {
 	var keyProfile Profile
-	findByAccountID, err := s.repository.findByAccountIDProfileRepo(createProfile.AccountID)
+	var keyProfileImage ProfileImage
+	findByAccountID, err := s.repository.FindByAccountIDProfileRepo(createProfile.AccountID)
 	if err != nil {
 		return findByAccountID, "", err
 	}
@@ -32,6 +33,13 @@ func (s *service) CreateOrUpdateProfileServ(createProfile CreateProfileReq) (Pro
 	keyCreateProfile, err := s.repository.CreateProfileRepo(keyProfile)
 	if err != nil {
 		return keyCreateProfile, "", err
+	} else {
+		keyProfileImage.ProfileID = keyCreateProfile.ID
+		keyProfileImage.ImgUrl = createProfile.ProfileImages
+		_, err := s.repository.CreateProfileImageRepo(keyProfileImage)
+		if err != nil {
+			return keyCreateProfile, "create", err
+		}
+		return keyCreateProfile, "create", nil
 	}
-	return keyCreateProfile, "create", nil
 }

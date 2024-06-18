@@ -12,5 +12,10 @@ func MigrationAll(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+
+	err = CreateCertificate(db)
+	if err != nil {
+		return err
+	}
 	return nil
 }

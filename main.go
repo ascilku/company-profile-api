@@ -4,6 +4,7 @@ import (
 	"company-profile-api/config/middleware"
 	"company-profile-api/config/respon"
 	"company-profile-api/database/connection_db"
+	"company-profile-api/database/migration"
 	"company-profile-api/handler"
 	"company-profile-api/src/user/account"
 	"company-profile-api/src/user/profile"
@@ -20,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal("failed connection to database ", err.Error())
 	} else {
-		// migration.MigrationAll(connectionDB)
+		migration.MigrationAll(connectionDB)
 		// connectionDB.AutoMigrate(&profile.ProfileImage{})
 		// connectionDB.Migrator().DropTable(&account.Account{})
 		// connectionDB.Migrator().DropTable(&profile.Profile{})
@@ -36,10 +37,17 @@ func main() {
 
 		router := gin.Default()
 		api := router.Group("api")
-		api.POST("account", newAccountHandler.CreateAccountHandler)
+		// auth account
 		api.POST("auth", newAccountHandler.LoginAccountHandler)
+		// account
+		api.POST("account", newAccountHandler.CreateAccountHandler)
 		// router profile
-		api.POST("profile", authMiddleware(newAuthMiddleware, newService), newProfileHandler.CreateProfileHand)
+		api.POST("profile", authMiddleware(newAuthMiddleware, newService), newProfileHandler.CreateOrUpdateProfileHand)
+		// certificate
+		api.POST("certificate", authMiddleware(newAuthMiddleware, newService))
+		api.GET("certificate", authMiddleware(newAuthMiddleware, newService))
+		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService))
+		api.PUT("certificate", authMiddleware(newAuthMiddleware, newService))
 		router.Run()
 	}
 }

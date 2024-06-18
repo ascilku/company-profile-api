@@ -18,5 +18,5 @@ type ProfileImage struct {
 	ProfileID int
 	ImgUrl    string
 	CreatedAt time.Time
-	Updated   time.Time
+	UpdatedAt time.Time
 }
