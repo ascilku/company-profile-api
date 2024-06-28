@@ -1,10 +1,9 @@
 package certification
 
-import "time"
-
 type CreateCertificateRequest struct {
-	NameCertificate string
-	Description     string
+	AccountID       int
+	NameCertificate string `form:"nameCertificate" binding:"required"`
+	Description     string `form:"description" binding:"required"`
 	FileCertificate string
-	OutYear         time.Time
+	OutYear         string `form:"outYear" binding:"required"`
 }

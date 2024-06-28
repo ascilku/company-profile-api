@@ -6,6 +6,7 @@ import (
 	"company-profile-api/database/connection_db"
 	"company-profile-api/database/migration"
 	"company-profile-api/handler"
+	"company-profile-api/src/certification"
 	"company-profile-api/src/user/account"
 	"company-profile-api/src/user/profile"
 	"log"
@@ -34,6 +35,10 @@ func main() {
 		newRepositoryProf := profile.NewRepository(connectionDB)
 		newServiceProf := profile.NewService(newRepositoryProf)
 		newProfileHandler := handler.NewProfileHandler(newServiceProf)
+		// certificate
+		newRepositoryCertif := certification.NewRepository(connectionDB)
+		newServiceCertif := certification.NewService(newRepositoryCertif)
+		newCertificateHandler := handler.NewCertificate(newServiceCertif)
 
 		router := gin.Default()
 		api := router.Group("api")
@@ -44,7 +49,7 @@ func main() {
 		// router profile
 		api.POST("profile", authMiddleware(newAuthMiddleware, newService), newProfileHandler.CreateOrUpdateProfileHand)
 		// certificate
-		api.POST("certificate", authMiddleware(newAuthMiddleware, newService))
+		api.POST("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.CreateCertificateHandler)
 		api.GET("certificate", authMiddleware(newAuthMiddleware, newService))
 		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService))
 		api.PUT("certificate", authMiddleware(newAuthMiddleware, newService))
