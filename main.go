@@ -50,7 +50,7 @@ func main() {
 		api.POST("profile", authMiddleware(newAuthMiddleware, newService), newProfileHandler.CreateOrUpdateProfileHand)
 		// certificate
 		api.POST("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.CreateCertificateHandler)
-		api.GET("certificate", authMiddleware(newAuthMiddleware, newService))
+		api.GET("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.FindAllCertificateHandler)
 		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService))
 		api.PUT("certificate", authMiddleware(newAuthMiddleware, newService))
 		router.Run()

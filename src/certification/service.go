@@ -1,9 +1,13 @@
 package certification
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type Service interface {
 	CreateCertificationServ(certificate CreateCertificateRequest) (bool, error)
+	FindAllCertificateServ(accountID int) ([]Certificate, error)
 }
 
 type service struct {
@@ -30,4 +34,15 @@ func (s *service) CreateCertificationServ(certificate CreateCertificateRequest) 
 		return false, err
 	}
 	return true, nil
+}
+
+func (s *service) FindAllCertificateServ(accountID int) ([]Certificate, error) {
+	findAllCertificate, err := s.repository.FindAllCertificate(accountID)
+	if err != nil {
+		return findAllCertificate, err
+	}
+	if len(findAllCertificate) == 0 {
+		return findAllCertificate, errors.New("not data certificate")
+	}
+	return findAllCertificate, nil
 }

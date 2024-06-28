@@ -27,7 +27,6 @@ func (c *certificate) CreateCertificateHandler(g *gin.Context) {
 		responApi := respon.ResponJson("Failed Create Certificate", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
 		g.JSON(http.StatusUnprocessableEntity, responApi)
 		return
-		return
 	} else {
 		fileCertificate, err := g.FormFile("fileCertificate")
 		if err != nil {
@@ -65,4 +64,22 @@ func (c *certificate) CreateCertificateHandler(g *gin.Context) {
 		}
 
 	}
+}
+
+func (c *certificate) FindAllCertificateHandler(g *gin.Context) {
+	account := g.MustGet("current_user_id").(account.Account)
+	findAllCertificateServ, err := c.certificationService.FindAllCertificateServ(account.ID)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		responApi := respon.ResponJson("failed Get Certificate", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
+		g.JSON(http.StatusUnprocessableEntity, responApi)
+		return
+	}
+	var keyCertificate []certification.FormatterCertificate
+	for _, keyFindAllCert := range findAllCertificateServ {
+		keyCertificate = append(keyCertificate, certification.FormatterCertificatee(keyFindAllCert))
+	}
+	responApi := respon.ResponJson("success Get Certificate", http.StatusOK, []interface{}{}, keyCertificate)
+	g.JSON(http.StatusOK, responApi)
+
 }

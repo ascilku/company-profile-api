@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type Repository interface {
 	CreateCertificationRep(certificate Certificate) (Certificate, error)
+	FindAllCertificate(accountID int) ([]Certificate, error)
 }
 
 type repository struct {
@@ -20,4 +21,13 @@ func (r *repository) CreateCertificationRep(certificate Certificate) (Certificat
 		return certificate, err
 	}
 	return certificate, nil
+}
+
+func (r *repository) FindAllCertificate(accountID int) ([]Certificate, error) {
+	var keyCertificate []Certificate
+	err := r.db.Where("account_id = ?", accountID).Find(&keyCertificate).Error
+	if err != nil {
+		return keyCertificate, err
+	}
+	return keyCertificate, nil
 }
