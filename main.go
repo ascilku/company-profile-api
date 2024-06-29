@@ -6,6 +6,7 @@ import (
 	"company-profile-api/database/connection_db"
 	"company-profile-api/database/migration"
 	"company-profile-api/handler"
+	"company-profile-api/src/about"
 	"company-profile-api/src/certification"
 	"company-profile-api/src/user/account"
 	"company-profile-api/src/user/profile"
@@ -26,6 +27,7 @@ func main() {
 		// connectionDB.AutoMigrate(&profile.ProfileImage{})
 		// connectionDB.Migrator().DropTable(&account.Account{})
 		// connectionDB.Migrator().DropTable(&profile.Profile{})
+		connectionDB.AutoMigrate(&about.About{})
 		// proses account
 		newRepository := account.NewRepository(connectionDB)
 		newService := account.NewService(newRepository)
@@ -39,6 +41,10 @@ func main() {
 		newRepositoryCertif := certification.NewRepository(connectionDB)
 		newServiceCertif := certification.NewService(newRepositoryCertif)
 		newCertificateHandler := handler.NewCertificate(newServiceCertif)
+		// about
+		newRepositoryAbout := about.NewRepository(connectionDB)
+		newServiceAbout := about.NewService(newRepositoryAbout)
+		newAboutHandler := handler.NewAboutHandler(newServiceAbout)
 
 		router := gin.Default()
 		api := router.Group("api")
@@ -53,6 +59,11 @@ func main() {
 		api.GET("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.FindAllCertificateHandler)
 		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.DeleteOneCertificateServ)
 		api.PUT("certificate", authMiddleware(newAuthMiddleware, newService))
+		// about
+		api.POST("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.CreateAboutServ)
+		api.GET("about", authMiddleware(newAuthMiddleware, newService))
+		api.DELETE("about", authMiddleware(newAuthMiddleware, newService))
+		api.PUT("about", authMiddleware(newAuthMiddleware, newService))
 		router.Run()
 	}
 }
