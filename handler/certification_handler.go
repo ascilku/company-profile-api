@@ -7,6 +7,7 @@ import (
 	"company-profile-api/src/user/account"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -81,5 +82,24 @@ func (c *certificate) FindAllCertificateHandler(g *gin.Context) {
 	}
 	responApi := respon.ResponJson("success Get Certificate", http.StatusOK, []interface{}{}, keyCertificate)
 	g.JSON(http.StatusOK, responApi)
+}
 
+func (c *certificate) DeleteOneCertificateServ(g *gin.Context) {
+	idQuery, err := strconv.Atoi(g.Query("id"))
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		responApi := respon.ResponJson("failed param id certificate", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
+		g.JSON(http.StatusUnprocessableEntity, responApi)
+		return
+	}
+
+	_, err = c.certificationService.DeleteOneCertificateServ(idQuery)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		responApi := respon.ResponJson("failed param id certificate", http.StatusBadRequest, errorMessage, []interface{}{})
+		g.JSON(http.StatusBadRequest, responApi)
+		return
+	}
+	responApi := respon.ResponJson("success delete certificate", http.StatusOK, []interface{}{}, []interface{}{})
+	g.JSON(http.StatusOK, responApi)
 }

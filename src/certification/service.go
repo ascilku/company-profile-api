@@ -8,6 +8,7 @@ import (
 type Service interface {
 	CreateCertificationServ(certificate CreateCertificateRequest) (bool, error)
 	FindAllCertificateServ(accountID int) ([]Certificate, error)
+	DeleteOneCertificateServ(ID int) (bool, error)
 }
 
 type service struct {
@@ -45,4 +46,21 @@ func (s *service) FindAllCertificateServ(accountID int) ([]Certificate, error) {
 		return findAllCertificate, errors.New("not data certificate")
 	}
 	return findAllCertificate, nil
+}
+
+func (s *service) DeleteOneCertificateServ(ID int) (bool, error) {
+	findByIDRep, err := s.repository.FindByIDRep(ID)
+	if err != nil {
+		return false, err
+	}
+
+	if findByIDRep.ID == 0 {
+		return false, errors.New("not data entry")
+	}
+
+	_, err = s.repository.DeleteOneCertificate(findByIDRep)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

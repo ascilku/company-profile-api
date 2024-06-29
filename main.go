@@ -51,7 +51,7 @@ func main() {
 		// certificate
 		api.POST("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.CreateCertificateHandler)
 		api.GET("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.FindAllCertificateHandler)
-		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService))
+		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.DeleteOneCertificateServ)
 		api.PUT("certificate", authMiddleware(newAuthMiddleware, newService))
 		router.Run()
 	}
