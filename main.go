@@ -60,8 +60,8 @@ func main() {
 		api.DELETE("certificate", authMiddleware(newAuthMiddleware, newService), newCertificateHandler.DeleteOneCertificateServ)
 		api.PUT("certificate", authMiddleware(newAuthMiddleware, newService))
 		// about
-		api.POST("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.CreateAboutServ)
-		api.GET("about", authMiddleware(newAuthMiddleware, newService))
+		api.POST("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.CreateAboutHend)
+		api.GET("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.FindIdAccountHend)
 		api.DELETE("about", authMiddleware(newAuthMiddleware, newService))
 		api.PUT("about", authMiddleware(newAuthMiddleware, newService))
 		router.Run()

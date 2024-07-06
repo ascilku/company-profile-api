@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Repository interface {
 	CreateAboutRep(about About) (About, error)
-	FindByIdAboutRep(accountID int) (About, error)
+	FindByIdAccountAboutRep(accountID int) (About, error)
 	UpdateAboutRep(about About) (About, error)
 }
 
@@ -24,7 +24,7 @@ func (r *repository) CreateAboutRep(about About) (About, error) {
 	return about, nil
 }
 
-func (r *repository) FindByIdAboutRep(accountID int) (About, error) {
+func (r *repository) FindByIdAccountAboutRep(accountID int) (About, error) {
 	var keyAbout About
 	err := r.db.Where("account_id = ?", accountID).Find(&keyAbout).Error
 	if err != nil {
