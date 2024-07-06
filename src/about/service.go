@@ -1,8 +1,11 @@
 package about
 
+import "errors"
+
 type Service interface {
 	CreateOrUpdateAboutServ(create CreateReq) (bool, string, error)
 	FindAboutServ(accountID int) (About, error)
+	DeleteAboutServ(aboutID int) (bool, error)
 }
 
 type service struct {
@@ -44,5 +47,25 @@ func (s *service) FindAboutServ(accountID int) (About, error) {
 	if err != nil {
 		return findById, err
 	}
+	if findById.ID == 0 {
+		return findById, errors.New("not data about entry")
+	}
 	return findById, nil
+}
+
+func (s *service) DeleteAboutServ(aboutID int) (bool, error) {
+	findByIdAbout, err := s.repository.FindByIdAboutRep(aboutID)
+	if err != nil {
+		return false, err
+	}
+
+	if findByIdAbout.ID == 0 {
+		return false, errors.New("not data about entry")
+	}
+
+	_, err = s.repository.DeleteAboutRep(aboutID)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

@@ -7,6 +7,7 @@ import (
 	"company-profile-api/src/user/account"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,4 +56,25 @@ func (a *aboutHandler) FindIdAccountHend(g *gin.Context) {
 	responsAPi := respon.ResponJson("success get data about", http.StatusOK, []interface{}{}, formatter)
 	g.JSON(http.StatusOK, responsAPi)
 	return
+}
+
+func (a *aboutHandler) DeleteAboutHend(g *gin.Context) {
+	idToInt, err := strconv.Atoi(g.Query("id"))
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		responApi := respon.ResponJson("failed param id about", http.StatusUnprocessableEntity, errorMessage, []interface{}{})
+		g.JSON(http.StatusUnprocessableEntity, responApi)
+		return
+	}
+	deleteAbout, err := a.about.DeleteAboutServ(idToInt)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		responApi := respon.ResponJson("failed delete about", http.StatusBadRequest, errorMessage, []interface{}{})
+		g.JSON(http.StatusBadRequest, responApi)
+		return
+	}
+
+	errorMessage := gin.H{"is_available": deleteAbout}
+	responApi := respon.ResponJson("success delete about", http.StatusOK, []interface{}{}, errorMessage)
+	g.JSON(http.StatusOK, responApi)
 }
