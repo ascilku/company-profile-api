@@ -4,10 +4,10 @@ import (
 	"company-profile-api/config/middleware"
 	"company-profile-api/config/respon"
 	"company-profile-api/database/connection_db"
-	"company-profile-api/database/migration"
 	"company-profile-api/handler"
 	"company-profile-api/src/about"
 	"company-profile-api/src/certification"
+	"company-profile-api/src/experience"
 	"company-profile-api/src/user/account"
 	"company-profile-api/src/user/profile"
 	"log"
@@ -23,11 +23,15 @@ func main() {
 	if err != nil {
 		log.Fatal("failed connection to database ", err.Error())
 	} else {
-		migration.MigrationAll(connectionDB)
+		// migration.MigrationAll(connectionDB)
 		// connectionDB.AutoMigrate(&profile.ProfileImage{})
 		// connectionDB.Migrator().DropTable(&account.Account{})
 		// connectionDB.Migrator().DropTable(&profile.Profile{})
-		connectionDB.AutoMigrate(&about.About{})
+		// connectionDB.AutoMigrate(&certification.Certificate{})
+		// connectionDB.AutoMigrate(&about.About{})
+		// connectionDB.AutoMigrate(&experience.Experience{})
+		// connectionDB.AutoMigrate(&skils.Skils{})
+		// connectionDB.AutoMigrate(&tools.Tools{})
 		// proses account
 		newRepository := account.NewRepository(connectionDB)
 		newService := account.NewService(newRepository)
@@ -45,6 +49,10 @@ func main() {
 		newRepositoryAbout := about.NewRepository(connectionDB)
 		newServiceAbout := about.NewService(newRepositoryAbout)
 		newAboutHandler := handler.NewAboutHandler(newServiceAbout)
+		// experience
+		newRepositoryExperience := experience.NewRepository(connectionDB)
+		newServiceExperience := experience.NewService(newRepositoryExperience)
+		newExperienceHandler := handler.NewExperience(newServiceExperience)
 
 		router := gin.Default()
 		api := router.Group("api")
@@ -63,6 +71,8 @@ func main() {
 		api.POST("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.CreateAboutHend) // ini bisa create or update
 		api.GET("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.FindIdAccountHend)
 		api.DELETE("about", authMiddleware(newAuthMiddleware, newService), newAboutHandler.DeleteAboutHend)
+		// experience
+		api.POST("experience", authMiddleware(newAuthMiddleware, newService), newExperienceHandler.CreateExperienceHand) // ini bisa create or update
 		router.Run()
 	}
 }
